@@ -64,7 +64,7 @@ class unifying_dongle:
       return
 
     # Get the dongle instance - Logitech dongle flashed with research firmware
-    self.dongle = usb.core.find(idVendor=0x1915, idProduct=0x0102)
+    self.dongle = usb.core.find(idVendor=0x1915, idProduct=0x0103)
     if self.dongle:
       logging.info("Found dongle with research firmware, attempting to load Logitech bootloader")
 

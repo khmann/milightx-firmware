@@ -30,6 +30,9 @@ void enter_promiscuous_mode(uint8_t * prefix, uint8_t prefix_length);
 //   rate:          data rate (0=250K, 1=1M, 2=2M)
 void enter_promiscuous_mode_generic(uint8_t * prefix, uint8_t prefix_length, uint8_t rate, uint8_t payload_length);
 
+// T1 IRQ handler
+void t1_irq() __interrupt(3)  __using(1);
+
 // Configure addressing on pipe 0
 //   address: address bytes
 //   length:  address length

@@ -78,3 +78,7 @@ enum usb_request_type_t
 #define LAUNCH_LOGITECH_BOOTLOADER     0xFE
 #define LAUNCH_NORDIC_BOOTLOADER       0xFF
 
+#define ML_DOWN				0x40
+#define ML_INIT				0x41
+#define ML_RX				0x42
+#define ML_TX				0x43

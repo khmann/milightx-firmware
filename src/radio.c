@@ -5,6 +5,17 @@
 #include "radio.h"
 #include "nRF24LU1P.h"
 
+// TX_PL_REUSE IRQ handler, timer1
+void t1_irq() __interrupt(3)  __using(1)
+{
+    tr1 = 0;		// stop timer
+    rfce = 0;
+    P02 = 0;		// red light off
+    P04 = 1;		// enable LNA
+    write_register_byte(CONFIG, PWR_UP | PRIM_RX);
+    rfce = 1;
+}
+
 // Enter ESB promiscuous mode
 void enter_promiscuous_mode(uint8_t * prefix, uint8_t prefix_length)
 {
@@ -191,6 +202,107 @@ void handle_radio_request(uint8_t request, uint8_t * data)
       AESIV = command[x];
     }
     logitech_bootloader();
+    return;
+  }
+
+  // Mi.Light INIT radio based on binary blob of precalculated address data.
+  else if(request == ML_INIT)
+  {
+    int length=5;
+    int channel=data[0];
+    int datalen=data[1];
+
+    uint8_t txpre[] = {data[2], data[3], data[4], data[5], data[6]};
+    uint8_t addr0[] = {data[7], data[8], data[9], data[10], data[11]};
+    uint8_t addr1[] = {data[12], data[13], data[14], data[15], data[16]};
+
+    radio_mode = promiscuous_generic;
+    pm_prefix_length = 0;
+    pm_payload_length = datalen;
+
+    rfce = 0;
+    write_register_byte(CONFIG, 0);			// power down
+    write_register_byte(STATUS, MAX_RT | TX_DS | RX_DR);// acknowledge status
+    flush_tx();
+    flush_rx();
+
+    write_register_byte(RF_CH, channel);
+
+    write_register(TX_ADDR, txpre, length);
+    write_register(RX_ADDR_P0, addr0, length);
+    write_register(RX_ADDR_P1, addr1, length);
+    write_register_byte(SETUP_AW, length - 2);
+    write_register_byte(EN_RXADDR, ENRX_P0 | ENRX_P1);	// enable RX pipe 0+1
+
+    write_register_byte(R_RX_PL_WID, datalen);		// RX payload width
+
+    write_register_byte(FEATURE, 0);			// disable DPL, ACK_PAY, DYN_ACK
+    write_register_byte(DYNPD, 0);			// no DPL on any pipe
+    write_register_byte(EN_AA, 0);			// no AA on any pipe
+
+    write_register_byte(RF_SETUP, RF_PWR_3 | RATE_1M);	// 75% power, 1M
+    write_register_byte(RX_PW_P0, datalen);
+    write_register_byte(RX_PW_P1, datalen);
+
+    ien03 = 1;		// enable timer1 overflow interrupt
+    // TODO: set IP0, IP1 to prioritize timer1
+
+//  tmod = 0x20;	// t1=mode2 = 8 bit, way too fast
+//  tmod = 0x00;	// t1=mode0 = 13 bit, really fast
+    tmod = 0x10;	// t1=mode1 = 16 bit, pretty fast
+
+    tl1 = 0x00;
+    th1 = 0x00;
+    tr1 = 1;		// run timer
+
+    in1bc = 0;
+
+/* we should be able to identify CrazyRadio boards by GPIO but something seems weird...
+    in1bc = 4;
+    in1buf[0] = P0DIR;	// as set by the bootloader
+    in1buf[1] = P0;
+	P0DIR=0x3f;
+        delay_us(10000);
+	in1buf[2]=P0DIR;
+        delay_us(10000);
+    in1buf[3] = P0;
+*/
+
+    P0DIR &= ~0x10;	// CrazyRADIO LNA
+    P0DIR &= ~0x05;	// CrazyRADIO LEDs
+    P00 = 0;		// green light
+    P02 = 1;		// red light
+
+    return;
+  }
+
+  // Mi.Light Power Down
+  else if(request == ML_DOWN)
+  {
+	tr1 = 0;
+  	rfce = 0;
+  	write_register_byte(CONFIG, 0);		//PWR DOWN
+	flush_tx();
+	flush_rx();
+	in1bc = 0;
+	return;
+  }
+
+  else if(request == ML_TX)
+  {
+    tl1 = 0x00;
+    th1 = 0x00;
+    tr1 = 1;		// run timer
+
+    rfce = 0;
+    write_register_byte(CONFIG, PWR_UP);
+    P04 = 0;		// disable LNA
+    P02 = 1;		// red light
+    spi_write(W_TX_PAYLOAD, &data[1], data[0]);
+    spi_write(REUSE_TX_PL,NULL,0);
+    rfce = 1;
+
+    in1bc = 0;
     return;
   }
 

@@ -50,10 +50,46 @@ __sfr __at (0xAD) REGXC;          // ref: nRF24LU1+ Product Spec, Section 19.3.6
 __sfr __at (0xA8) ien0;           // ref: nRF24LU1+ Product Spec, Section 22.4.1, Table 139
 __sfr __at (0xB8) ien1;           // ref: nRF24LU1+ Product Spec, Section 22.4.2, Table 140
 
+__sfr __at (0x88) tcon;           // ref: nRF24LU1+ Product Spec, Section 11.4.1, Table 80
+__sfr __at (0x89) tmod;           // ref: nRF24LU1+ Product Spec, Section 11.4.2, Table 81
+__sfr __at (0x8a) th0;           // ref: nRF24LU1+ Product Spec, Section 11.4.3, Table 82
+__sfr __at (0x8c) tl0;           // ref: nRF24LU1+ Product Spec, Section 11.4.3, Table 82
+__sfr __at (0x8b) th1;           // ref: nRF24LU1+ Product Spec, Section 11.4.3, Table 83
+__sfr __at (0x8d) tl1;           // ref: nRF24LU1+ Product Spec, Section 11.4.3, Table 83
+
+__sfr __at (0xa9) ip0;           // ref: nRF24LU1+ Product Spec, Section 22.4.3, Table 142
+__sfr __at (0xb9) ip1;           // ref: nRF24LU1+ Product Spec, Section 22.4.3, Table 143
+
 // SFR bits
 __sbit __at (0x90) rfce;          // ref: nRF24LU1+ Product Spec, Section 6.5.1, Table 21
 __sbit __at (0x91) rfcsn;         // ref: nRF24LU1+ Product Spec, Section 6.5.1, Table 21
+__sbit __at (0x92) rfcken;         // ref: nRF24LU1+ Product Spec, Section 6.5.1, Table 21
 __sbit __at (0xC0) RFRDY;         // ref: nRF24LU1+ Product Spec, Section 22.4.4, Table 146
+__sbit __at (0x80) P00;             // kh
+__sbit __at (0x81) P01;             // kh
+__sbit __at (0x82) P02;             // kh
+__sbit __at (0x83) P03;             // kh
+__sbit __at (0x84) P04;             // kh
+__sbit __at (0x85) P05;             // kh
+__sbit __at (0x86) P06;             // kh
+__sbit __at (0x87) P07;             // kh
+__sbit __at (0xA8) ien00;             // kh
+__sbit __at (0xA9) ien01;             // kh
+__sbit __at (0xAA) ien02;             // kh
+__sbit __at (0xAB) ien03;             // kh
+__sbit __at (0xAC) ien04;             // kh
+__sbit __at (0xAD) ien05;             // kh
+__sbit __at (0xAE) ien06;             // kh
+__sbit __at (0xAF) ien07;             // kh
+
+__sbit __at (0x88) it0;		// ref: nRF24LU1+ Product Spec, Section 11.4.1, Table 80
+__sbit __at (0x89) ie0;		// ref: nRF24LU1+ Product Spec, Section 11.4.1, Table 80
+__sbit __at (0x8a) it1;		// ref: nRF24LU1+ Product Spec, Section 11.4.1, Table 80
+__sbit __at (0x8b) ie1;		// ref: nRF24LU1+ Product Spec, Section 11.4.1, Table 80
+__sbit __at (0x8c) tr0;		// ref: nRF24LU1+ Product Spec, Section 11.4.1, Table 80
+__sbit __at (0x8d) tf0;		// ref: nRF24LU1+ Product Spec, Section 11.4.1, Table 80
+__sbit __at (0x8e) tr1;		// ref: nRF24LU1+ Product Spec, Section 11.4.1, Table 80
+__sbit __at (0x8f) tf1;		// ref: nRF24LU1+ Product Spec, Section 11.4.1, Table 80
 
 // Memory mapped register
 #define __xreg(A) (*((__xdata uint8_t *)A))
@@ -144,6 +180,7 @@ enum RF_SETUP
   PLL_LOCK  = 0x10,
   RATE_2M   = 0x08,
   RATE_1M   = 0x00,
+  RATE_500K = 0x28,
   RATE_250K = 0x20,
   RF_PWR_4  = 0x06,
   RF_PWR_3  = 0x04,
@@ -190,6 +227,7 @@ enum nrf24_command
   W_ACK_PAYLOAD    = 0xA8,
   FLUSH_TX         = 0xE1,
   FLUSH_RX         = 0xE2,
+  REUSE_TX_PL      = 0xE3,
   _NOP             = 0xFF,
 };
 

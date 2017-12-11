@@ -40,6 +40,6 @@ void main()
     REGXH = 0xFF;
     REGXL = 0xFF;
     REGXC = 0x08;
-    delay_us(1000);
+    delay_us(65535);
   }
 }

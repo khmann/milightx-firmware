@@ -29,8 +29,8 @@ __code const device_descriptor_t device_descriptor =
   .bDeviceProtocol    = 0xFF,
   .bMaxPacketSize0    = 64,     // EP0 max packet size
   .idVendor           = 0x1915, // Nordic Semiconductor
-  .idProduct          = 0x0102, // Nordic bootloader product ID incremebted by 1
-  .bcdDevice          = 0x0001, // Device version number 
+  .idProduct          = 0x0103, // Nordic bootloader product ID incremebted by 1
+  .bcdDevice          = 0x0002, // Device version number 
   .iManufacturer      = STRING_DESCRIPTOR_MANUFACTURER,
   .iProduct           = STRING_DESCRIPTOR_PRODUCT,
   .iSerialNumber      = 0,
@@ -47,7 +47,7 @@ __code const configuration_descriptor_t configuration_descriptor =
   .bConfigurationValue    = 1,     // Configuration identifer
   .iConfiguration         = 0,
   .bmAttributes           = 0x80,  // Bus powered
-  .bMaxPower              = 100,   // Max power of 100*2mA = 200mA 
+  .bMaxPower              = 50,   // Max power of 50*2mA = 100mA 
   .interface_descriptor = 
     {
       .bLength            = 9,    // Size of the interface descriptor 
@@ -85,6 +85,6 @@ __code char * device_strings[3] =
 {
   "\x04\x09",          // Language (EN-US)
   "RFStorm",           // Manufacturer
-  "Research Firmware", // Product
+  "MiLighTX",		// Product
 };
 

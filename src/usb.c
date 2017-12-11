@@ -78,6 +78,7 @@ void usb_reset_config()
 // USB IRQ handler
 void usb_irq() __interrupt(12)  __using(1)
 {
+  P00 ^= 1;
   // Which IRQ? 
   // ref: nRF24LU1+ Product Spec, Section 7.8.3, Table 34
   switch (ivec) 
